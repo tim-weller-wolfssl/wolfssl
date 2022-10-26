@@ -78,32 +78,11 @@ void main(void)
 
 #endif /* MCUEXPRESSO_FRDM_K82F_SDK */
 
-    wolfCrypt_Init(); /* required for ksdk_port_init */
-    do
-    {
-        /* Used for testing, must have a delay so no data is missed while serial is initializing */
-        #ifdef WOLFSSL_FRDM_K64_JENKINS
-            /* run twice */
-            if(test_num == 2){
-                printf("\n&&&&&&&&&&&&& done &&&&&&&&&&&&&&&");
-                delay_us(1000000);
-                break;
-            }
-            delay_us(1000000); /* 1 second */
-        #endif
+    wolfCrypt_Init();
 
-        printf("\nCrypt Test %d:\n", test_num);
-        wolfcrypt_test(&args);
-        printf("Crypt Test %d: Return code %d\n", test_num, args.return_code);
-
-        test_num++;
-    } while(args.return_code == 0);
-
-    /* Print this again for redundancy */
-    #ifdef WOLFSSL_FRDM_K64_JENKINS
-        printf("\n&&&&&&&&&&&&&& done &&&&&&&&&&&&&\n");
-        delay_us(1000000);
-    #endif
+    printf("\nCrypt Test: Begin...\n");
+    wolfcrypt_test(&args);
+    printf("Crypt Test: Return code %d\n", args.return_code);
 
     wolfCrypt_Cleanup();
 }
@@ -113,11 +92,11 @@ void main(void)
 /* Return total elapsed seconds */
 double current_time(int reset)
 {
-	double seconds;
+	double          seconds;
+	rtc_datetime_t  datetime;
 
 	(void)reset; /* Not supported */
 
-	rtc_datetime_t datetime;
 	RTC_GetDatetime(RTC, &datetime);
 
 	/* Perform simplified time-since-Epoch calculation (no accounting
